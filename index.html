@@ -1,47 +1,32 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>دفتر الدفعات</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <style>
-    body {font-family:"Cairo",sans-serif;background:linear-gradient(135deg,#0f172a,#1e293b);color:#f1f5f9;padding:20px;text-align:center;}
-    h1{margin-bottom:10px;color:#38bdf8;}
-    img.logo{width:100px;margin-bottom:15px;}
-    .controls{margin:15px 0;display:flex;flex-wrap:wrap;gap:8px;justify-content:center;}
-    button{padding:10px 12px;border:none;background:#2563eb;color:white;border-radius:8px;cursor:pointer;font-size:14px;transition:0.2s;}
-    button:hover{background:#1d4ed8;}
-    input[type="text"]{padding:8px;border-radius:6px;border:1px solid #334155;margin:10px auto;width:min(520px,90%);text-align:center;background:#0f172a;color:#f1f5f9;}
-    table{width:100%;border-collapse:collapse;background:#1e293b;margin-top:10px;border-radius:10px;overflow:hidden;}
-    th,td{border:1px solid #334155;padding:10px;text-align:center;}
-    th{background:#0f172a;color:#38bdf8;}
-    tr:nth-child(even){background:#273449;}
-    td[contenteditable="true"]{outline:none;}
-    footer{margin-top:20px;font-size:14px;color:#94a3b8;}
-    .highlight{color:#22c55e;font-weight:bold;}
-  </style>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <img src="logo.png" alt="شعار البرنامج" class="logo">
+  <img src="logo.png" alt="شعار البرنامج" class="logo" />
   <h1>📘 دفتر الدفعات</h1>
 
-  <input type="text" id="searchBox" placeholder="🔍 ابحث..." oninput="searchTable()">
+  <input type="text" id="searchBox" placeholder="🔍 ابحث..." oninput="searchTable()" />
 
   <div class="controls">
-    <button onclick="addRow()">➕ إضافة صف</button>
-    <button onclick="deleteSelected()">🗑️ حذف المحدد</button>
-    <button onclick="saveData()">💾 حفظ</button>
-    <button onclick="clearAll()">🧹 تفريغ</button>
-    <button onclick="saveAsImage()">📷 حفظ كصورة</button>
-    <button onclick="exportToCSV()">📑 تصدير Excel</button>
-    <button onclick="printPDF()">🖨️ طباعة PDF</button>
+    <img src="icons/add.png" alt="إضافة" onclick="addRow()" />
+    <img src="icons/delete.png" alt="حذف" onclick="deleteSelected()" />
+    <img src="icons/save.png" alt="حفظ" onclick="saveData()" />
+    <img src="icons/clear.png" alt="تفريغ" onclick="clearAll()" />
+    <img src="icons/image.png" alt="صورة" onclick="saveAsImage()" />
+    <img src="icons/export.png" alt="تصدير" onclick="exportToCSV()" />
+    <img src="icons/print.png" alt="طباعة" onclick="printPDF()" />
   </div>
 
   <table id="table">
     <thead>
       <tr>
-        <th><input type="checkbox" onclick="toggleAll(this)"></th>
+        <th><input type="checkbox" onclick="toggleAll(this)" /></th>
         <th>التاريخ</th>
         <th>المعهد / المدرسة</th>
         <th>الوصف</th>
@@ -63,132 +48,12 @@
     <p>إهداء إلى أستاذي العزيز: <b>د. محمد صباغ</b></p>
   </footer>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="script.js"></script>
   <script>
-    const tbody = document.getElementById("tbody");
-    const sumEl = document.getElementById("sum");
-    const lastSavedEl = document.getElementById("lastSaved");
-    const STORAGE_KEY = "payments_data";
-
-    function addRow(data = {}) {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td><input type="checkbox" class="row-check"></td>
-        <td contenteditable="true">${data.date || new Date().toISOString().slice(0,10)}</td>
-        <td contenteditable="true">${data.school || ""}</td>
-        <td contenteditable="true">${data.desc || ""}</td>
-        <td contenteditable="true">${data.type || "دخل"}</td>
-        <td contenteditable="true">${data.amount || 0}</td>
-        <td contenteditable="true">${data.status || "معلق"}</td>
-        <td contenteditable="true">${data.note || ""}</td>
-      `;
-      tbody.appendChild(tr);
-      updateSum();
-      updateSummary();
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js');
     }
-
-    function deleteSelected() {
-      document.querySelectorAll(".row-check:checked").forEach(ch => ch.closest("tr").remove());
-      updateSum();
-      updateSummary();
-      saveData();
-    }
-
-    function toggleAll(master) {
-      document.querySelectorAll(".row-check").forEach(ch => ch.checked = master.checked);
-    }
-
-    function updateSum() {
-      let total = 0;
-      tbody.querySelectorAll("tr").forEach(tr => {
-        const amount = parseFloat(tr.cells[5].textContent) || 0;
-        const type = tr.cells[4].textContent.trim();
-        total += (type === "مصروف") ? -amount : amount;
-      });
-      sumEl.textContent = total.toFixed(2);
-    }
-
-    function updateSummary() {
-      const rows = tbody.querySelectorAll("tr");
-      document.getElementById("count").textContent = rows.length;
-      let income = 0, expense = 0;
-      rows.forEach(tr => {
-        const type = tr.cells[4].textContent.trim();
-        if (type === "دخل") income++;
-        if (type === "مصروف") expense++;
-      });
-      document.getElementById("incomeCount").textContent = income;
-      document.getElementById("expenseCount").textContent = expense;
-    }
-
-    function saveData() {
-      const rows = [...tbody.querySelectorAll("tr")].map(tr => ({
-        date: tr.cells[1].textContent,
-        school: tr.cells[2].textContent,
-        desc: tr.cells[3].textContent,
-        type: tr.cells[4].textContent,
-        amount: tr.cells[5].textContent,
-        status: tr.cells[6].textContent,
-        note: tr.cells[7].textContent
-      }));
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(rows));
-      lastSavedEl.textContent = new Date().toLocaleString();
-    }
-
-    function loadData() {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) {
-        JSON.parse(raw).forEach(r => addRow(r));
-      } else {
-        addRow();
-      }
-    }
-
-    function clearAll() {
-      if (confirm("هل أنت متأكد من تفريغ جميع البيانات؟")) {
-        tbody.innerHTML = "";
-        updateSum();
-        updateSummary();
-        localStorage.removeItem(STORAGE_KEY);
-        lastSavedEl.textContent = "تم التفريغ";
-      }
-    }
-
-    function saveAsImage() {
-      html2canvas(document.body).then(canvas => {
-        const link = document.createElement("a");
-        link.download = "دفتر_الدفعات.png";
-        link.href = canvas.toDataURL("image/png");
-        link.click();
-      });
-    }
-
-    function exportToCSV() {
-      const rows = [["التاريخ","المعهد/المدرسة","الوصف","النوع","المبلغ","الحالة","ملاحظات"]];
-      tbody.querySelectorAll("tr").forEach(tr => {
-        const row = [];
-        for (let i = 1; i < tr.cells.length; i++) {
-          row.push(tr.cells[i].textContent.replace(/,/g, "،"));
-        }
-        rows.push(row);
-      });
-      const csvContent = "data:text/csv;charset=utf-8," + rows.map(e => e.join(",")).join("\n");
-      const link = document.createElement("a");
-      link.href = encodeURI(csvContent);
-      link.download = "دفتر_الدفعات.csv";
-      link.click();
-    }
-
-    function printPDF() { window.print(); }
-
-    function searchTable() {
-      const filter = document.getElementById("searchBox").value.toLowerCase();
-      tbody.querySelectorAll("tr").forEach(tr => {
-        const text = tr.textContent.toLowerCase();
-        tr.style.display = text.includes(filter) ? "" : "none";
-      });
-    }
-
-    loadData();
   </script>
 </body>
 </html>
