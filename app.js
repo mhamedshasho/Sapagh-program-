@@ -1,10 +1,11 @@
-// تأكد من وجود العناصر الأساسية وإعلام في الكونسل إن لم توجد
+// مساعدة للوصول للعناصر مع تحذير
 function $id(id){
   const el = document.getElementById(id);
   if(!el) console.warn('عنصر مفقود في DOM:', id);
   return el;
 }
 
+// البيانات والمراجع
 let payments = JSON.parse(localStorage.getItem('payments_v2')) || [];
 
 const tbody = $id('dataTable')?.querySelector('tbody');
@@ -13,26 +14,31 @@ const searchInput = $id('search');
 const btnAdd = $id('btn-add');
 const btnSave = $id('btn-save');
 const btnImage = $id('btn-image');
+const btnThank = $id('btn-thank');
 
-if(!tbody || !totalEl){
-  console.error('الأجزاء الأساسية للجدول غير موجودة — تحقق من HTML.');
-}
+// عناصر المودال
+const thankModal = $id('thankModal');
+const modalBackdrop = $id('modalBackdrop');
+const modalClose = $id('modalClose');
+const teacherImage = $id('teacherImage');
+const thankText = $id('thankText');
 
-// تنسيق الأرقام
+if(!tbody || !totalEl) console.error('أجزاء الجدول الأساسية غير موجودة — تحقق من HTML.');
+
+// تنسيقات ومساعدة
 function formatNumber(v){
   const n = parseFloat(v) || 0;
   return n.toLocaleString('en-US');
 }
-
 function today(){
   const d = new Date();
   return d.toISOString().slice(0,10);
 }
-
 function saveData(){
   localStorage.setItem('payments_v2', JSON.stringify(payments));
 }
 
+// العرض
 function render(filter = ''){
   if(!tbody) return;
   tbody.innerHTML = '';
@@ -88,7 +94,7 @@ function render(filter = ''){
   if(totalEl) totalEl.innerText = formatNumber(total.toFixed(2));
 }
 
-// أحداث الأزرار (مع حماية إن لم توجد)
+// أحداث الأزرار
 btnAdd?.addEventListener('click', ()=>{
   payments.push(['', '0', today(), '']);
   saveData(); render(searchInput?.value || '');
@@ -117,8 +123,26 @@ btnImage?.addEventListener('click', ()=>{
   });
 });
 
+// زر الشكر ونافذته
+btnThank?.addEventListener('click', () => {
+  if(!thankModal) return;
+  thankModal.classList.remove('hidden');
+  thankModal.setAttribute('aria-hidden', 'false');
+});
+
+// إغلاق المودال
+modalBackdrop?.addEventListener('click', closeThankModal);
+modalClose?.addEventListener('click', closeThankModal);
+document.addEventListener('keydown', (e) => { if(e.key === 'Escape') closeThankModal(); });
+
+function closeThankModal(){
+  if(!thankModal) return;
+  thankModal.classList.add('hidden');
+  thankModal.setAttribute('aria-hidden', 'true');
+}
+
 // بحث مباشر
 searchInput?.addEventListener('input', (e)=> render(e.target.value));
 
-// بدء العرض الأولي
+// عرض أولي
 render();
