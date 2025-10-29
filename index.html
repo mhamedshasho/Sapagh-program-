@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>دفتر الدفعات — احترافي</title>
   <link rel="stylesheet" href="style.css" />
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#0b4966" />
 </head>
 <body>
   <header class="topbar">
@@ -29,6 +31,10 @@
         <img src="icons/image.png" alt="حفظ كصورة" />
         <span>صورة</span>
       </button>
+      <button class="icon-btn" id="btn-thank" title="شكرًا">
+        <img src="icons/thank.png" alt="شكرًا" />
+        <span>شكراً</span>
+      </button>
       <input id="search" class="search" placeholder="ابحث بالاسم أو المبلغ..." />
     </div>
   </header>
@@ -52,10 +58,10 @@
             <tr>
               <th style="width:40px;">#</th>
               <th>الاسم</th>
-              <th>المبلغ (‎SYP)</th>
+              <th>المبلغ (SYP)</th>
               <th>تاريخ</th>
               <th>ملاحظات</th>
-              <th style="width:110px;">إجراءات</th>
+              <th style="width:140px;">إجراءات</th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -73,29 +79,31 @@
     <div>نسخة محلية • تحفظ البيانات على جهازك</div>
   </footer>
 
-  <!-- html2canvas (يجب أن يكون قبل app.js) -->
+  <!-- Modal الشكر -->
+  <div id="thankModal" class="modal hidden" aria-hidden="true">
+    <div class="modal-backdrop" id="modalBackdrop"></div>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="thankTitle">
+      <button class="modal-close" id="modalClose" aria-label="إغلاق">×</button>
+      <h3 id="thankTitle">شكر وتقدير</h3>
+      <img id="teacherImage" src="images/teacher.jpg" alt="صورة الأستاذ" />
+      <p id="thankText">شكرًا لجهودك المبذولة</p>
+    </div>
+  </div>
+
+  <!-- html2canvas ثم السكربت -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="app.js"></script>
-</body>
-</html>      </tr>
-    </thead>
-    <tbody id="tbody"></tbody>
-  </table>
 
-  <p>الإجمالي: <span id="sum" class="highlight">0</span></p>
-  <p>عدد السجلات: <span id="count">0</span> | عدد الدخل: <span id="incomeCount">0</span> | عدد المصروف: <span id="expenseCount">0</span></p>
-  <p>آخر حفظ: <span id="lastSaved">لم يتم بعد</span></p>
-
-  <footer>
-    <p>تطوير: <b>محمد شاشو</b></p>
-    <p>إهداء إلى أستاذي العزيز: <b>د. محمد صباغ</b></p>
-  </footer>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="script.js"></script>
+  <!-- تسجيل Service Worker -->
   <script>
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js');
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').then(reg => {
+          console.log('Service Worker مسجّل بنجاح. Scope:', reg.scope);
+        }).catch(err => {
+          console.warn('فشل تسجيل Service Worker:', err);
+        });
+      });
     }
   </script>
 </body>
