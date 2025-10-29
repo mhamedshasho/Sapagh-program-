@@ -1,40 +1,83 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>دفتر الدفعات</title>
-  <link rel="manifest" href="manifest.json" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>دفتر الدفعات — احترافي</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <img src="logo.png" alt="شعار البرنامج" class="logo" />
-  <h1>📘 دفتر الدفعات</h1>
+  <header class="topbar">
+    <div class="brand">
+      <img src="icons/logo.png" alt="لوغو" class="logo" />
+      <div>
+        <h1>دفتر الدفعات</h1>
+        <p class="subtitle">سهل — سريع — محفوظ محليًا</p>
+      </div>
+    </div>
 
-  <input type="text" id="searchBox" placeholder="🔍 ابحث..." oninput="searchTable()" />
+    <div class="top-actions">
+      <button class="icon-btn" id="btn-add" title="إضافة دفعة">
+        <img src="icons/add.png" alt="إضافة" />
+        <span>إضافة</span>
+      </button>
+      <button class="icon-btn" id="btn-save" title="حفظ">
+        <img src="icons/save.png" alt="حفظ" />
+        <span>حفظ</span>
+      </button>
+      <button class="icon-btn" id="btn-image" title="حفظ كصورة">
+        <img src="icons/image.png" alt="حفظ كصورة" />
+        <span>صورة</span>
+      </button>
+      <input id="search" class="search" placeholder="ابحث بالاسم أو المبلغ..." />
+    </div>
+  </header>
 
-  <div class="controls">
-    <img src="icons/add.png" alt="إضافة" onclick="addRow()" />
-    <img src="icons/delete.png" alt="حذف" onclick="deleteSelected()" />
-    <img src="icons/save.png" alt="حفظ" onclick="saveData()" />
-    <img src="icons/clear.png" alt="تفريغ" onclick="clearAll()" />
-    <img src="icons/image.png" alt="صورة" onclick="saveAsImage()" />
-    <img src="icons/export.png" alt="تصدير" onclick="exportToCSV()" />
-    <img src="icons/print.png" alt="طباعة" onclick="printPDF()" />
-  </div>
+  <main>
+    <section class="card">
+      <div class="card-header">
+        <h2>قائمة الدفعات</h2>
+        <div class="card-controls">
+          <label class="rows-label">عرض
+            <select id="rowsPerPage">
+              <option>عرض الكل</option>
+            </select>
+          </label>
+        </div>
+      </div>
 
-  <table id="table">
-    <thead>
-      <tr>
-        <th><input type="checkbox" onclick="toggleAll(this)" /></th>
-        <th>التاريخ</th>
-        <th>المعهد / المدرسة</th>
-        <th>الوصف</th>
-        <th>النوع</th>
-        <th>المبلغ</th>
-        <th>الحالة</th>
-        <th>ملاحظات</th>
-      </tr>
+      <div class="table-wrap" id="table-wrap">
+        <table id="dataTable" dir="rtl" lang="ar">
+          <thead>
+            <tr>
+              <th style="width:40px;">#</th>
+              <th>الاسم</th>
+              <th>المبلغ (‎SYP)</th>
+              <th>تاريخ</th>
+              <th>ملاحظات</th>
+              <th style="width:110px;">إجراءات</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+          <tfoot>
+            <tr>
+              <td colspan="6" class="tfoot-total">المجموع الكلي: <span id="totalValue">0.00</span> SYP</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div>نسخة محلية • تحفظ البيانات على جهازك</div>
+  </footer>
+
+  <!-- html2canvas (يجب أن يكون قبل app.js) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>      </tr>
     </thead>
     <tbody id="tbody"></tbody>
   </table>
