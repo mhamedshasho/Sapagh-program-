@@ -1,14 +1,11 @@
-/* خطوط ونمط عام */
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap');
 :root{
-  --glass-bg: rgba(255,255,255,0.08);
-  --card-bg: rgba(255,255,255,0.9);
   --accent: #0b4966;
   --accent-2:#005f8a;
   --muted: #b8c6c9;
 }
 
-/* خلفية آثار حلب مع تدرج داكن */
+/* خلفية أنيقة */
 body{
   font-family: 'Cairo', sans-serif;
   margin:0;
@@ -21,7 +18,7 @@ body{
   flex-direction:column;
 }
 
-/* الشريط العلوي احترافي */
+/* الشريط العلوي */
 .topbar{
   display:flex;
   justify-content:space-between;
