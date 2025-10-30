@@ -2,68 +2,65 @@
 <html lang="ar">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <title>دفتر الدفعات</title>
   <link rel="stylesheet" href="style.css" />
-  <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#0b4966" />
 </head>
 <body>
+  <!-- رأس الصفحة -->
   <header class="topbar">
     <div class="brand">
       <img src="icons/logo.png" alt="لوغو" class="logo" />
       <div>
         <h1>دفتر الدفعات</h1>
-        <p class="subtitle">سهل — سريع — محفوظ محليًا</p>
+        <p class="subtitle">إدارة سهلة من هاتفك</p>
       </div>
-    </div>
-
-    <div class="top-actions">
-      <button class="icon-btn" id="btn-add" title="إضافة دفعة">
-        <img src="icons/add.png" alt="إضافة" />
-        <span>إضافة</span>
-      </button>
-      <button class="icon-btn" id="btn-save" title="حفظ">
-        <img src="icons/save.png" alt="حفظ" />
-        <span>حفظ</span>
-      </button>
-      <button class="icon-btn" id="btn-image" title="حفظ كصورة">
-        <img src="icons/image.png" alt="صورة" />
-        <span>صورة</span>
-      </button>
-      <input id="search" class="search" placeholder="ابحث بالاسم أو المبلغ..." />
     </div>
   </header>
 
+  <!-- أزرار التحكم -->
+  <div class="top-actions">
+    <button class="icon-btn" id="btn-add">
+      <img src="icons/add.png" alt="إضافة" />
+      <span>إضافة</span>
+    </button>
+    <button class="icon-btn" id="btn-save">
+      <img src="icons/save.png" alt="حفظ" />
+      <span>حفظ</span>
+    </button>
+    <button class="icon-btn" id="btn-image">
+      <img src="icons/image.png" alt="صورة" />
+      <span>صورة</span>
+    </button>
+  </div>
+
+  <!-- مربع البحث -->
+  <div class="search-box">
+    <input id="search" class="search" placeholder="ابحث بالاسم أو المبلغ..." />
+  </div>
+
+  <!-- البطاقة الرئيسية -->
   <main>
     <section class="card">
-      <div class="card-header">
-        <h2>قائمة الدفعات</h2>
-        <div class="card-controls">
-          <label class="rows-label">عرض
-            <select id="rowsPerPage">
-              <option>عرض الكل</option>
-            </select>
-          </label>
-        </div>
-      </div>
-
+      <h2 class="card-title">قائمة الدفعات</h2>
       <div class="table-wrap" id="table-wrap">
         <table id="dataTable" dir="rtl" lang="ar">
           <thead>
             <tr>
-              <th style="width:40px;">#</th>
+              <th>#</th>
               <th>الاسم</th>
-              <th>المبلغ (SYP)</th>
+              <th>المبلغ</th>
               <th>تاريخ</th>
               <th>ملاحظات</th>
-              <th style="width:140px;">إجراءات</th>
+              <th>إجراءات</th>
             </tr>
           </thead>
           <tbody></tbody>
           <tfoot>
             <tr>
-              <td colspan="6" class="tfoot-total">المجموع الكلي: <span id="totalValue">0.00</span> SYP</td>
+              <td colspan="6" class="tfoot-total">
+                المجموع الكلي: <span id="totalValue">0</span> SYP
+              </td>
             </tr>
           </tfoot>
         </table>
@@ -71,21 +68,13 @@
     </section>
   </main>
 
+  <!-- الفوتر -->
   <footer class="footer">
-    <div>نسخة محلية • تحفظ البيانات على جهازك</div>
+    <p>جميع البيانات محفوظة محليًا على جهازك</p>
   </footer>
 
+  <!-- مكتبة حفظ كصورة -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="app.js"></script>
-
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js')
-          .then(reg => console.log('Service Worker مسجّل:', reg.scope))
-          .catch(err => console.warn('فشل تسجيل Service Worker:', err));
-      });
-    }
-  </script>
 </body>
 </html>
