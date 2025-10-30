@@ -1,4 +1,3 @@
-// تأكد من وجود العناصر الأساسية وإعلام في الكونسل إن لم توجد
 function $id(id){
   const el = document.getElementById(id);
   if(!el) console.warn('عنصر مفقود في DOM:', id);
@@ -18,7 +17,6 @@ if(!tbody || !totalEl){
   console.error('الأجزاء الأساسية للجدول غير موجودة — تحقق من HTML.');
 }
 
-// تنسيق الأرقام
 function formatNumber(v){
   const n = parseFloat(v) || 0;
   return n.toLocaleString('en-US');
@@ -88,7 +86,6 @@ function render(filter = ''){
   if(totalEl) totalEl.innerText = formatNumber(total.toFixed(2));
 }
 
-// أحداث الأزرار (مع حماية إن لم توجد)
 btnAdd?.addEventListener('click', ()=>{
   payments.push(['', '0', today(), '']);
   saveData(); render(searchInput?.value || '');
@@ -117,8 +114,6 @@ btnImage?.addEventListener('click', ()=>{
   });
 });
 
-// بحث مباشر
 searchInput?.addEventListener('input', (e)=> render(e.target.value));
 
-// بدء العرض الأولي
 render();
