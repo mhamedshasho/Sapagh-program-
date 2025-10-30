@@ -4,6 +4,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <title>دفتر الدفعات</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0b4966">
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -18,7 +20,7 @@
     </div>
   </header>
 
-  <!-- أزرار التحكم (أيقونة + نص بجانبها) -->
+  <!-- أزرار التحكم -->
   <div class="top-actions">
     <button class="icon-btn" id="btn-add">
       <img src="icons/add.png" alt="إضافة" />
@@ -76,5 +78,10 @@
   <!-- مكتبة حفظ كصورة -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js');
+    }
+  </script>
 </body>
 </html>
