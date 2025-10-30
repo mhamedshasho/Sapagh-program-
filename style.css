@@ -10,7 +10,6 @@
   --text: #222;
 }
 
-/* خلفية عامة */
 body {
   font-family: 'Cairo', sans-serif;
   margin: 0;
@@ -44,31 +43,32 @@ body {
   color: #cce4f2;
 }
 
-/* أزرار التحكم */
+/* أزرار التحكم (أيقونة + نص بجانبها) */
 .top-actions {
   display: flex;
-  justify-content: center;
+  justify-content: space-around;
+  align-items: center;
   gap: 12px;
   padding: 10px;
-  flex-wrap: wrap;
+  background: #f9f9f9;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
 }
 .icon-btn {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  background: #fff;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  width: 70px;
-  height: 70px;
-  justify-content: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 6px 8px;
 }
 .icon-btn img {
   width: 28px;
   height: 28px;
 }
 .icon-btn span {
-  font-size: 0.75rem;
+  font-size: 0.9rem;
   color: var(--accent);
   font-weight: 600;
 }
@@ -92,6 +92,8 @@ body {
   background: #fff;
   border-radius: 8px;
   border: 1px solid var(--border);
+  width: 100%;
+  box-sizing: border-box;
 }
 .card-title {
   margin: 0 0 10px 0;
@@ -103,6 +105,7 @@ body {
 /* الجدول */
 .table-wrap {
   overflow-x: auto;
+  width: 100%;
 }
 table {
   width: 100%;
