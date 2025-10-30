@@ -1,58 +1,58 @@
-const CACHE_NAME = 'payments-app-v2';
-const STATIC_ASSETS = [
+// اسم الكاش
+const CACHE_NAME = 'payments-pwa-v1';
+
+// الملفات التي سنخزنها للعمل دون اتصال
+const ASSETS = [
   '/',
   '/index.html',
   '/style.css',
   '/app.js',
   '/manifest.json',
-  '/icons/maskable-192.png',
-  '/icons/maskable-512.png'
+  // أيقونات (تأكد من وجود هذه الملفات فعلاً)
+  '/icons/logo-192.png',
+  '/icons/logo-512.png',
+  '/icons/maskable-512.png',
+  // مكتبة حفظ الصورة
+  'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js'
 ];
 
+// تثبيت الخدمة: تخزين الأصول
 self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(STATIC_ASSETS))
-      .then(() => self.skipWaiting())
+    caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS))
   );
+  self.skipWaiting();
 });
 
+// تفعيل: تنظيف الكاشات القديمة
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
-    ).then(() => self.clients.claim())
+      Promise.all(
+        keys.map(key => {
+          if (key !== CACHE_NAME) return caches.delete(key);
+        })
+      )
+    )
   );
+  self.clients.claim();
 });
 
+// استراتيجية الجلب: شبكة أولاً، ثم كاش كاحتياطي
 self.addEventListener('fetch', event => {
-  const req = event.request;
-  if (req.method !== 'GET') return;
+  const { request } = event;
 
-  // صفحات HTML: network-first مع fallback إلى index.html من الكاش
-  if (req.mode === 'navigate' || (req.headers.get('accept') || '').includes('text/html')) {
-    event.respondWith(
-      fetch(req).then(networkResponse => {
-        caches.open(CACHE_NAME).then(cache => cache.put(req, networkResponse.clone()));
-        return networkResponse;
-      }).catch(() => caches.match('/index.html'))
-    );
-    return;
-  }
+  // تجاهل طلبات غير GET
+  if (request.method !== 'GET') return;
 
-  // موارد ثابتة: cache-first ثم حفظ نسخة عند الحصول عليها من الشبكة
   event.respondWith(
-    caches.match(req).then(cached => {
-      if (cached) return cached;
-      return fetch(req).then(networkResponse => {
-        if (!networkResponse || networkResponse.status !== 200) return networkResponse;
-        const clone = networkResponse.clone();
-        caches.open(CACHE_NAME).then(cache => cache.put(req, clone));
-        return networkResponse;
-      }).catch(() => {
-        if (req.destination === 'image') return caches.match('/icons/maskable-192.png');
-        return caches.match('/index.html');
-      });
-    })
+    fetch(request)
+      .then(response => {
+        // خزّن نسخة من الرد في الكاش
+        const respClone = response.clone();
+        caches.open(CACHE_NAME).then(cache => cache.put(request, respClone));
+        return response;
+      })
+      .catch(() => caches.match(request).then(cached => cached || caches.match('/index.html')))
   );
 });
