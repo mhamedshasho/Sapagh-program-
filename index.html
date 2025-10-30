@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>دفتر الدفعات — احترافي</title>
   <link rel="stylesheet" href="style.css" />
-  <link rel="manifest" href="/manifest.json" />
+  <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#0b4966" />
 </head>
 <body>
@@ -28,7 +28,7 @@
         <span>حفظ</span>
       </button>
       <button class="icon-btn" id="btn-image" title="حفظ كصورة">
-        <img src="icons/image.png" alt="حفظ كصورة" />
+        <img src="icons/image.png" alt="صورة" />
         <span>صورة</span>
       </button>
       <input id="search" class="search" placeholder="ابحث بالاسم أو المبلغ..." />
@@ -75,7 +75,7 @@
     <div>نسخة محلية • تحفظ البيانات على جهازك</div>
   </footer>
 
-  <!-- html2canvas ثم السكربت -->
+  <!-- مكتبة html2canvas لحفظ الجدول كصورة -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="app.js"></script>
 
@@ -83,11 +83,9 @@
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js').then(reg => {
-          console.log('Service Worker مسجّل بنجاح. Scope:', reg.scope);
-        }).catch(err => {
-          console.warn('فشل تسجيل Service Worker:', err);
-        });
+        navigator.serviceWorker.register('sw.js')
+          .then(reg => console.log('Service Worker مسجّل:', reg.scope))
+          .catch(err => console.warn('فشل تسجيل Service Worker:', err));
       });
     }
   </script>
