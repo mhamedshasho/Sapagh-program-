@@ -1,119 +1,128 @@
-function $id(id){
-  const el = document.getElementById(id);
-  if(!el) console.warn('عنصر مفقود في DOM:', id);
-  return el;
-}
+// عناصر DOM
+const tbody = document.querySelector('#dataTable tbody');
+const totalEl = document.getElementById('totalValue');
+const searchInput = document.getElementById('search');
+const btnAdd = document.getElementById('btn-add');
+const btnSave = document.getElementById('btn-save');
+const btnImage = document.getElementById('btn-image');
 
-let payments = JSON.parse(localStorage.getItem('payments_v2')) || [];
+// تحميل البيانات من التخزين المحلي
+let payments = JSON.parse(localStorage.getItem('payments_mobile')) || [];
 
-const tbody = $id('dataTable')?.querySelector('tbody');
-const totalEl = $id('totalValue');
-const searchInput = $id('search');
-const btnAdd = $id('btn-add');
-const btnSave = $id('btn-save');
-const btnImage = $id('btn-image');
-
-if(!tbody || !totalEl){
-  console.error('الأجزاء الأساسية للجدول غير موجودة — تحقق من HTML.');
-}
-
-function formatNumber(v){
+// تنسيق الأرقام
+function formatNumber(v) {
   const n = parseFloat(v) || 0;
   return n.toLocaleString('en-US');
 }
 
-function today(){
-  const d = new Date();
-  return d.toISOString().slice(0,10);
+// تاريخ اليوم
+function today() {
+  return new Date().toISOString().slice(0, 10);
 }
 
-function saveData(){
-  localStorage.setItem('payments_v2', JSON.stringify(payments));
+// حفظ البيانات
+function saveData() {
+  localStorage.setItem('payments_mobile', JSON.stringify(payments));
 }
 
-function render(filter = ''){
-  if(!tbody) return;
+// عرض البيانات في الجدول
+function render(filter = '') {
   tbody.innerHTML = '';
   let total = 0;
+
   payments.forEach((row, i) => {
-    const [name = '', amount = '0', date = '', note = ''] = row;
+    const [name, amount, date, note] = row;
     const text = `${name} ${amount} ${note}`.toLowerCase();
-    if(filter && !text.includes(filter.toLowerCase())) return;
+    if (filter && !text.includes(filter.toLowerCase())) return;
 
     const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${i + 1}</td>
+      <td contenteditable="true">${name}</td>
+      <td contenteditable="true">${formatNumber(amount)}</td>
+      <td contenteditable="true">${date || today()}</td>
+      <td contenteditable="true">${note}</td>
+      <td>
+        <button class="action-btn del">حذف</button>
+        <button class="action-btn edit">تعديل</button>
+      </td>
+    `;
 
-    const tdIndex = document.createElement('td'); tdIndex.innerText = i+1; tr.appendChild(tdIndex);
+    const tds = tr.querySelectorAll('td');
 
-    const tdName = document.createElement('td'); tdName.innerText = name; tdName.contentEditable = true;
-    tdName.addEventListener('input', e=> { payments[i][0]=e.target.innerText; saveData(); });
-    tr.appendChild(tdName);
+    // تعديل الاسم
+    tds[1].addEventListener('input', e => {
+      payments[i][0] = e.target.innerText;
+      saveData();
+    });
 
-    const tdAmount = document.createElement('td'); tdAmount.innerText = formatNumber(amount);
-    tdAmount.contentEditable = true;
-    tdAmount.addEventListener('input', e=> {
-      const raw = e.target.innerText.replace(/[^\d\.\-]/g,'') || '0';
+    // تعديل المبلغ
+    tds[2].addEventListener('input', e => {
+      const raw = e.target.innerText.replace(/[^\d.]/g, '') || '0';
       payments[i][1] = raw;
       saveData();
       render(filter);
     });
-    tr.appendChild(tdAmount);
 
-    const tdDate = document.createElement('td'); tdDate.innerText = date || today();
-    tdDate.contentEditable = true;
-    tdDate.addEventListener('input', e=> { payments[i][2]=e.target.innerText; saveData(); });
-    tr.appendChild(tdDate);
+    // تعديل التاريخ
+    tds[3].addEventListener('input', e => {
+      payments[i][2] = e.target.innerText;
+      saveData();
+    });
 
-    const tdNote = document.createElement('td'); tdNote.innerText = note;
-    tdNote.contentEditable = true;
-    tdNote.addEventListener('input', e=> { payments[i][3]=e.target.innerText; saveData(); });
-    tr.appendChild(tdNote);
+    // تعديل الملاحظات
+    tds[4].addEventListener('input', e => {
+      payments[i][3] = e.target.innerText;
+      saveData();
+    });
 
-    const tdActions = document.createElement('td');
-    const btnDel = document.createElement('button'); btnDel.className='action-btn del'; btnDel.innerText='حذف';
-    btnDel.onclick = ()=> { if(confirm('هل تريد حذف هذه الدفعة؟')) { payments.splice(i,1); saveData(); render(filter); } };
-    tdActions.appendChild(btnDel);
+    // زر الحذف
+    tr.querySelector('.del').onclick = () => {
+      if (confirm('هل تريد حذف هذه الدفعة؟')) {
+        payments.splice(i, 1);
+        saveData();
+        render(filter);
+      }
+    };
 
-    const btnEdit = document.createElement('button'); btnEdit.className='action-btn edit'; btnEdit.innerText='تعديل';
-    btnEdit.onclick = ()=> { const rows = tbody.querySelectorAll('tr'); if(rows[i]) rows[i].children[1].focus(); };
-    tdActions.appendChild(btnEdit);
+    // زر التعديل (يركز على الاسم)
+    tr.querySelector('.edit').onclick = () => {
+      tds[1].focus();
+    };
 
-    tr.appendChild(tdActions);
     tbody.appendChild(tr);
-
-    total += parseFloat(payments[i][1] || 0);
+    total += parseFloat(amount || 0);
   });
 
-  if(totalEl) totalEl.innerText = formatNumber(total.toFixed(2));
+  totalEl.innerText = formatNumber(total.toFixed(2));
 }
 
-btnAdd?.addEventListener('click', ()=>{
+// إضافة دفعة جديدة
+btnAdd.addEventListener('click', () => {
   payments.push(['', '0', today(), '']);
-  saveData(); render(searchInput?.value || '');
-  setTimeout(()=> {
-    const rows = tbody?.querySelectorAll('tr');
-    if(rows && rows.length) rows[rows.length-1].children[1].focus();
-  },50);
+  saveData();
+  render(searchInput.value);
 });
 
-btnSave?.addEventListener('click', ()=>{
+// حفظ يدوي
+btnSave.addEventListener('click', () => {
   saveData();
   alert('تم حفظ البيانات محليًا');
 });
 
-btnImage?.addEventListener('click', ()=>{
-  const el = $id('table-wrap');
-  if(!el){ alert('لا يمكن أخذ صورة: عنصر الجدول غير موجود'); return; }
-  html2canvas(el, {scale:2, useCORS:true}).then(canvas=>{
+// حفظ كصورة
+btnImage.addEventListener('click', () => {
+  const el = document.getElementById('table-wrap');
+  html2canvas(el, { scale: 2 }).then(canvas => {
     const a = document.createElement('a');
     a.href = canvas.toDataURL('image/png');
     a.download = 'دفتر-الدفعات.png';
     a.click();
-  }).catch(err=>{
-    console.error('خطأ في html2canvas:', err);
-    alert('فشل حفظ الصورة. افتح الكونسل لتفاصيل الخطأ.');
   });
 });
 
-searchInput?.addEventListener('input', (e)=> render(e.target.value));
+// البحث
+searchInput.addEventListener('input', e => render(e.target.value));
 
+// تشغيل أولي
 render();
