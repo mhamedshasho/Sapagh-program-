@@ -8,67 +8,97 @@
   --bg: #ffffff;
   --bg-page: #f5f7fa;
   --text: #222;
+  --card-padding: 12px;
+  --radius: 8px;
+  --gap: 12px;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  direction: rtl;
 }
 
 body {
   font-family: 'Cairo', sans-serif;
-  margin: 0;
   background: var(--bg-page);
   color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.4;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
 /* رأس الصفحة */
 .topbar {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  padding: 12px;
+  gap: 12px;
+  padding: calc(var(--card-padding) / 1.2);
   background: var(--accent);
   color: #fff;
   text-align: center;
 }
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
 .logo {
-  width: 60px;
-  height: 60px;
-  border-radius: 8px;
-  margin-bottom: 6px;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius);
+  object-fit: cover;
+  flex-shrink: 0;
 }
 .brand h1 {
   margin: 0;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
+  line-height: 1;
 }
 .subtitle {
   margin: 0;
-  font-size: 0.8rem;
-  color: #cce4f2;
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.85);
 }
 
 /* أزرار التحكم (أيقونة + نص بجانبها) */
 .top-actions {
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   align-items: center;
-  gap: 12px;
+  gap: var(--gap);
   padding: 10px;
   background: #f9f9f9;
   border-top: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
 }
 .icon-btn {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   background: transparent;
-  border: none;
+  border: 1px solid transparent;
   cursor: pointer;
-  padding: 6px 8px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  transition: background .15s, transform .08s;
 }
+.icon-btn:hover {
+  background: #fff;
+  transform: translateY(-1px);
+}
+.icon-btn:active { transform: translateY(0); }
 .icon-btn img {
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
 }
 .icon-btn span {
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   color: var(--accent);
   font-weight: 600;
 }
@@ -76,24 +106,32 @@ body {
 /* مربع البحث */
 .search-box {
   padding: 10px;
+  background: transparent;
 }
 .search {
   width: 100%;
   padding: 10px;
-  border-radius: 6px;
+  border-radius: 10px;
   border: 1px solid var(--border);
   font-size: 1rem;
+  box-sizing: border-box;
+}
+.search:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(11,73,102,0.08);
+  border-color: var(--accent);
 }
 
 /* البطاقة */
 .card {
-  margin: 10px;
-  padding: 12px;
-  background: #fff;
-  border-radius: 8px;
+  margin: 12px;
+  padding: var(--card-padding);
+  background: var(--bg);
+  border-radius: var(--radius);
   border: 1px solid var(--border);
-  width: 100%;
+  width: auto;
   box-sizing: border-box;
+  box-shadow: 0 1px 2px rgba(16,24,40,0.03);
 }
 .card-title {
   margin: 0 0 10px 0;
@@ -106,23 +144,30 @@ body {
 .table-wrap {
   overflow-x: auto;
   width: 100%;
+  -webkit-overflow-scrolling: touch;
 }
 table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
+  min-width: 600px; /* للحفاظ على عرض جيد في الجداول المحمولة */
 }
 thead th {
   background: var(--accent);
   color: #fff;
-  padding: 8px;
+  padding: 10px 8px;
   font-weight: 600;
+  text-align: center;
+  position: sticky;
+  top: 0;
+  z-index: 2;
 }
 tbody td {
   background: #fff;
-  padding: 8px;
+  padding: 10px 8px;
   border-bottom: 1px solid var(--border);
   text-align: center;
+  vertical-align: middle;
 }
 tbody tr:hover td {
   background: #f0f4f8;
@@ -130,12 +175,12 @@ tbody tr:hover td {
 
 /* أزرار الجدول */
 .action-btn {
-  padding: 4px 6px;
-  border-radius: 4px;
+  padding: 6px 8px;
+  border-radius: 6px;
   border: none;
   cursor: pointer;
   margin: 2px;
-  font-size: 0.8rem;
+  font-size: 0.85rem;
 }
 .del {
   background: var(--danger);
@@ -148,7 +193,7 @@ tbody tr:hover td {
 
 /* تذييل الجدول */
 tfoot .tfoot-total {
-  padding: 8px;
+  padding: 10px;
   text-align: center;
   background: #f0f4f8;
   font-weight: 700;
@@ -156,10 +201,20 @@ tfoot .tfoot-total {
 
 /* الفوتر */
 .footer {
-  padding: 10px;
+  margin-top: auto;
+  padding: 12px;
   text-align: center;
   color: #666;
   font-size: 0.85rem;
   background: #f0f4f8;
   border-top: 1px solid var(--border);
+}
+
+/* استجابة صغيرة للشاشات الضيقة */
+@media (max-width: 480px) {
+  .brand h1 { font-size: 1rem; }
+  .logo { width: 48px; height: 48px; }
+  .icon-btn img { width: 22px; height: 22px; }
+  table { min-width: 520px; font-size: 0.88rem; }
+  .card { margin: 8px; padding: 10px; }
 }
