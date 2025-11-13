@@ -1,18 +1,25 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <title>دفتر الدفعات</title>
-  <link rel="manifest" href="manifest.json">
+
+  <!-- PWA manifest -->
+  <link rel="manifest" href="./manifest.json">
   <meta name="theme-color" content="#0b4966">
-  <link rel="stylesheet" href="style.css" />
+
+  <!-- أيقونة الموقع (اختياري لكن مفيد للمتصفحات) -->
+  <link rel="icon" href="./icons/logo-192.png" sizes="192x192" type="image/png">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
   <!-- رأس الصفحة -->
   <header class="topbar">
     <div class="brand">
-      <img src="icons/logo.png" alt="لوغو" class="logo" />
+      <img src="./icons/logo.png" alt="لوغو" class="logo" />
       <div>
         <h1>دفتر الدفعات</h1>
         <p class="subtitle">إدارة سهلة من هاتفك</p>
@@ -23,15 +30,15 @@
   <!-- أزرار التحكم -->
   <div class="top-actions">
     <button class="icon-btn" id="btn-add">
-      <img src="icons/add.png" alt="إضافة" />
+      <img src="./icons/add.png" alt="إضافة" />
       <span>إضافة</span>
     </button>
     <button class="icon-btn" id="btn-save">
-      <img src="icons/save.png" alt="حفظ" />
+      <img src="./icons/save.png" alt="حفظ" />
       <span>حفظ</span>
     </button>
     <button class="icon-btn" id="btn-image">
-      <img src="icons/image.png" alt="صورة" />
+      <img src="./icons/image.png" alt="صورة" />
       <span>صورة</span>
     </button>
   </div>
@@ -77,11 +84,21 @@
 
   <!-- مكتبة حفظ كصورة -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="app.js"></script>
+  <script src="./app.js"></script>
+
+  <!-- تسجيل Service Worker بشكل آمن مع سجل للأخطاء -->
   <script>
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js');
+      navigator.serviceWorker.register('./service-worker.js')
+        .then(reg => console.log('Service Worker registered:', reg.scope))
+        .catch(err => console.warn('Service Worker registration failed:', err));
     }
   </script>
+
+  <noscript>
+    <div style="padding:12px;background:#fff3cd;color:#856404;text-align:center;">
+      لتجربة كاملة يرجى تفعيل JavaScript في متصفحك
+    </div>
+  </noscript>
 </body>
 </html>
